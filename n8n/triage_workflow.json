@@ -1,0 +1,33 @@
+{
+  "name": "Recruiter Inbox - Triage",
+  "nodes": [
+    {
+      "parameters": { "pollTimes": { "item": [{ "mode": "everyMinute" }] }, "simple": true, "filters": { "labelIds": ["INBOX"] } },
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0],
+      "notes": "Attach your Gmail OAuth2 credential."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://agent:8000/triage",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { message_id: $json.id, sender: $json.From, subject: $json.Subject, body: $json.snippet, received_at: $json.internalDate } }}",
+        "options": { "retryOnFail": true, "maxTries": 3, "waitBetweenTries": 2000 }
+      },
+      "name": "Call Agent /triage",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [300, 0],
+      "retryOnFail": true,
+      "maxTries": 3
+    }
+  ],
+  "connections": {
+    "Gmail Trigger": { "main": [[{ "node": "Call Agent /triage", "type": "main", "index": 0 }]] }
+  },
+  "settings": {}
+}

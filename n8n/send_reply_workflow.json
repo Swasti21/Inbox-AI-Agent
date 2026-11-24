@@ -1,0 +1,29 @@
+{
+  "name": "Recruiter Inbox - Send Reply",
+  "nodes": [
+    {
+      "parameters": { "httpMethod": "POST", "path": "send-reply", "responseMode": "onReceived" },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "reply",
+        "messageId": "={{ $json.body.message_id }}",
+        "message": "={{ $json.body.body }}"
+      },
+      "name": "Gmail Reply",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [300, 0],
+      "notes": "Attach your Gmail OAuth2 credential."
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Gmail Reply", "type": "main", "index": 0 }]] }
+  },
+  "settings": {}
+}
